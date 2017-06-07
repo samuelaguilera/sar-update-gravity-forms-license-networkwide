@@ -63,15 +63,6 @@ function sar_update_gf_key_networkwide(){
 if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) && ! empty( GF_LICENSE_KEY ) ) { // Make sure we're running WP 4.6 or newer and we have a key
 	$blog_ids = get_sites( array( 'fields' => 'ids' ) ); // Return only blog_id for each site of the network
 
-	/*
-  	$already_updated = get_option( 'sar_gf_key_updated' );
-
-  	if ( $already_updated ) {
-		GFCommon::log_debug( 'Key was already updated on all sites. Aborting.' );
-		return;
-	}
-	*/
-
 	GFCommon::log_debug( 'Number of sites in the network => ' . count( $blog_ids ) );
 
 	foreach ( $blog_ids as $blog_id ) {
@@ -86,13 +77,6 @@ if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) && ! empt
 	}
 
  	GFCommon::log_debug( 'Process done in all sites!' );
-
-    /*
-  	switch_to_blog( BLOG_ID_CURRENT_SITE ); // Switch to main site
-	add_option( 'sar_gf_key_updated', true, '', 'no' ); // Add option to main site to prevent running the update again
-  	restore_current_blog();
- 	GFCommon::log_debug( 'Added sar_gf_key_updated to main site to prevent running this again.' );
-    */
 
 	return; // All done!
 
