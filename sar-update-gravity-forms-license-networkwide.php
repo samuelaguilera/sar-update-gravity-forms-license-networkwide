@@ -3,7 +3,7 @@
 Plugin Name: SAR Update Gravity Forms License Networkwide
 Description: Update Gravity Forms license key in all sites of a WordPress multisite network
 Author: Samuel Aguilera
-Version: 1.0
+Version: 1.0.1
 Author URI: http://www.samuelaguilera.com
 License: GPL3
 */
@@ -61,7 +61,7 @@ function sar_update_gf_key_callback() {
 function sar_update_gf_key_networkwide(){
 
 if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) && ! empty( GF_LICENSE_KEY ) ) { // Make sure we're running WP 4.6 or newer and we have a key
-	$blog_ids = get_sites( array( 'fields' => 'ids' ) ); // Return only blog_id for each site of the network
+	$blog_ids = get_sites( array( 'fields' => 'ids', 'number' => '0' ) ); // Return only blog_id for each site of the network
 
 	GFCommon::log_debug( 'Number of sites in the network => ' . count( $blog_ids ) );
 
