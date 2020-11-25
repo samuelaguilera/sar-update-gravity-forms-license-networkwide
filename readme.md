@@ -13,6 +13,7 @@ If you have a lot of sites in your network it could take a while, be patient and
 ## Usage
 
 1. Make sure you have [GF_LICENSE_KEY](https://docs.gravityforms.com/wp-config-options/#gf-license-key) set in your wp-config.php file.
-2. Go to Network Admin -> Dashboard.
-3. Click on Update GF License submenu.
-4. Follow instructions displayed in the page.
+2. Gravity Forms must be enabled network-wide.
+3. Go to Network Admin -> Dashboard.
+4. Click on Update GF License submenu.
+5. Follow instructions displayed in the page.

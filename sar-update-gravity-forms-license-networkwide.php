@@ -8,40 +8,46 @@ Author URI: http://www.samuelaguilera.com
 License: GPL3
 */
 
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
-add_action('network_admin_menu', 'sar_update_gf_license_key_submenu_page');
+add_action( 'network_admin_menu', 'sar_update_gf_license_key_submenu_page' );
 
 function sar_update_gf_license_key_submenu_page() {
-    add_submenu_page(
-        'index.php',
-        'Update GF License',
-        'Update GF License',
-        'manage_network',
-        'network-update-gf-license',
-        'sar_update_gf_key_callback' );
+	add_submenu_page(
+		'index.php',
+		'Update GF License',
+		'Update GF License',
+		'manage_network',
+		'network-update-gf-license',
+		'sar_update_gf_key_callback'
+	);
 }
 
 function sar_update_gf_key_callback() {
-    if ( isset( $_POST['update_gf_license'] ) ) {
+	if ( isset( $_POST['update_gf_license'] ) ) {
 
 		if ( ! wp_verify_nonce( $_POST['update_gf_license_nonce'], 'update-gf-license' ) ) {
-			wp_die('Security check not passed!');
+			wp_die( 'Security check not passed!' );
 		}
 
-        // Start the party!
-        sar_update_gf_key_networkwide();
-
-        // The party is over!
-        echo '<div id="message" class="updated fade"><p>Job done!</p></div>';
+		// Prevent a fatal error if Gravity Forms is not enabled network-wide.
+		if ( class_exists( 'GFCommon' ) ) {
+			// Start the party!
+			sar_update_gf_key_networkwide();
+			// The party is over!
+			echo '<div id="message" class="updated fade"><p>Job done!</p></div>';
+		} else {
+			echo '<div id="message" class="updated fade"><p>Gravity Forms is not enabled network-wide!</p></div>';
+		}
 	}
 
-  $gf_settings = esc_url( get_admin_url( null, 'admin.php?page=gf_settings' ) );
+	$gf_settings = esc_url( get_admin_url( null, 'admin.php?page=gf_settings' ) );
 
 	echo '<div class="wrap">';
 	echo '<h1>Update Gravity Forms License key Networkwide</h1>';
 
-	if ( defined ( 'GF_LICENSE_KEY' ) ){
+	if ( defined( 'GF_LICENSE_KEY' ) ) {
 		echo '<p><b>NOTE: Before start, make sure to generate a full database backup, just in case.</b></p>';
 		echo '<p>License key: ' . GF_LICENSE_KEY . '</p>';
 		echo '<p>The purpose of this tool is to allow you to update the license key in all sites of a WordPress multisite network with only one click. It will save the key, remove the UNLICENSED COPY message (if the key used is valid), and validate the key in the Gravity Forms settings page of each site with it activated. To do it simply click on the button below and wait. It is recommended to enable Logging in <a href="' . $gf_settings . '">Forms -> Settings</a> and set it to <b>log all messages for Gravity Forms core before using this tool</b>.</p>';
@@ -58,27 +64,27 @@ function sar_update_gf_key_callback() {
 
 }
 
-function sar_update_gf_key_networkwide(){
+function sar_update_gf_key_networkwide() {
 
-if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) && ! empty( GF_LICENSE_KEY ) ) { // Make sure we're running WP 4.6 or newer and we have a key
-	$blog_ids = get_sites( array( 'fields' => 'ids', 'number' => '0' ) ); // Return only blog_id for each site of the network
+	if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) && ! empty( GF_LICENSE_KEY ) ) { // Make sure we're running WP 4.6 or newer and we have a key.
+		$blog_ids = get_sites( array( 'fields' => 'ids', 'number' => '0' ) ); // Return only blog_id for each site of the network.
 
-	GFCommon::log_debug( 'Number of sites in the network => ' . count( $blog_ids ) );
+		GFCommon::log_debug( 'Number of sites in the network => ' . count( $blog_ids ) );
 
-	foreach ( $blog_ids as $blog_id ) {
-		switch_to_blog( $blog_id );
-			if ( class_exists ( 'GFForms' ) ) { // Prevent running if license key is empty or GF is not active for this site.
-				RGFormsModel::save_key( GF_LICENSE_KEY ); // Save the key
-				GFCommon::cache_remote_message(); // Remove the UNLICENSED COPY message once we have the valid key saved
-				GFCommon::get_version_info( false ); // Update key validaton in Forms -> Settings page
+		foreach ( $blog_ids as $blog_id ) {
+			switch_to_blog( $blog_id );
+			if ( class_exists( 'GFForms' ) ) { // Prevent running if license key is empty or GF is not active for this site.
+					RGFormsModel::save_key( GF_LICENSE_KEY ); // Save the key.
+					GFCommon::cache_remote_message(); // Remove the UNLICENSED COPY message once we have the valid key saved.
+					GFCommon::get_version_info( false ); // Update key validaton in Forms -> Settings page.
 			}
-		restore_current_blog();
-	  GFCommon::log_debug( 'Done for blog_id => ' . $blog_id );
-	}
+			restore_current_blog();
+			GFCommon::log_debug( 'Done for blog_id => ' . $blog_id );
+		}
 
- 	GFCommon::log_debug( 'Process done in all sites!' );
+		GFCommon::log_debug( 'Process done in all sites!' );
 
-	return; // All done!
+		return; // All done!
 
 	}
 
